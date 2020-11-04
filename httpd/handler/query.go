@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/sencoder/go-loghouse/pkg/clickhouse"
 	"github.com/sencoder/go-loghouse/pkg/log"
 	"github.com/sencoder/go-loghouse/pkg/render"
 	"github.com/sirupsen/logrus"
@@ -27,6 +28,10 @@ func QueryHandler(w http.ResponseWriter, r *http.Request) {
 		QueryUser string
 	}
 
+	type Attribute struct {
+		Query string
+	}
+
 	data := struct {
 		Tab          string
 		Username     string
@@ -34,10 +39,14 @@ func QueryHandler(w http.ResponseWriter, r *http.Request) {
 		TabQueries   []TabQuery
 		ErrorMessage string
 		ParsedSeekTo string
+		Result       []clickhouse.QueryResult
+		Attribute    Attribute
+		Namespaces   []string
 	}{
 		Tab:      "",
 		Username: "admin",
 		Version:  "e2282b63",
+		Namespaces: []string{"default", "production", "staging", "kube-system"},
 	}
 
 	err := render.App.HTML(w, http.StatusOK, "index", data)

@@ -63,20 +63,18 @@
 
 <div class="error-container error-container_fixed">
     <div class="container-fluid error-container__content">
-{{/*        <% unless @error.nil? %>*/}}
         {{ if ne .ErrorMessage "" }}
         <div class="alert alert-danger alert-dismissible" role="alert">
-{{/*            <%= @error %>*/}}
             {{ .ErrorMessage }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         </div>
-{{/*        <% end %>*/}}
         {{ end }}
     </div>
 </div>
+
 <div id="result">
     <div class="logs-result logs-result_default-theme">
-        {{ if eq .ErrorMessage "" }}
+        {{ if not .ErrorMessage }}
         <div class="logs-result__container"
              data-entry-oldest='<%= @query.result.length > 0 ? @query.result.last.timestamp.strftime("%Y-%m-%d %H:%M:%S.%N") : Time.now.strftime("%Y-%m-%d %H:%M:%S.%N") %>'
              data-entry-newest='<%= @query.result.length > 0 ? @query.result.first.timestamp.strftime("%Y-%m-%d %H:%M:%S.%N") : Time.now.strftime("%Y-%m-%d %H:%M:%S.%N") %>'>
@@ -85,8 +83,8 @@
         {{end}}
     </div>
 </div>
-{{/*<%= erb :_filter_form %>*/}}
 
+{{ template "filter_form" .}}
 
 <script src="vendor/jquery-3.2.1.min.js" charset="utf-8"></script>
 <script src="vendor/moment-with-locales.min.js" charset="utf-8"></script>
