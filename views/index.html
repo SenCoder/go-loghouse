@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Loghouse</title>
+
+    <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="/vendor/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet"
+          type="text/css"/>
+    <link href="vendor/select2/css/select2.min.css" rel="stylesheet" type="text/css"/>
+    <link href="vendor/select2/css/select2-bootstrap.min.css" rel="stylesheet" type="text/css"/>
+
+    <link href="assets/stylesheets/bootstrap-custom.css" rel="stylesheet" type="text/css"/>
+    <link href="assets/stylesheets/search-params.css" rel="stylesheet" type="text/css"/>
+    <link href="assets/stylesheets/super-date-picker.css" rel="stylesheet" type="text/css"/>
+    <link href="assets/stylesheets/logs.css" rel="stylesheet" type="text/css"/>
+    <link href="assets/stylesheets/main.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">Loghouse</a>
+        </div>
+        <ul class="nav navbar-nav">
+            {{/*            <li <%= 'class="active"' if @tab.blank? %>><a href="/">Default query</a></li>*/}}
+            <li {{ if eq .Tab "" }} class="active" {{ else }} {{ end }}><a href="/">Default query</a></li>
+
+            {{/*            <% @tab_queries.each do |q| %>*/}}
+            {{/*            <li class="<%= 'active' if @tab == q.id %>">*/}}
+            {{/*                <a href="/query?query_id=<%= q.id %>">*/}}
+            {{/*                    <%= q.attributes[:name] %>*/}}
+            {{/*                </a>*/}}
+            {{/*            </li>*/}}
+            {{/*            <% end %>*/}}
+
+            {{/*            <li <%= 'class="active"' if @tab == :queries %>>*/}}
+            <li {{ if eq .Tab ":queries" }} class="active"{{ else }} {{ end }}>
+                <a href="/queries" data-toggle="tooltip" data-placement="bottom" title="Manage queries"><span
+                            class="glyphicon glyphicon-cog" aria-hidden="true"></span></a>
+            </li>
+            <li class="navbar-right">
+                <a href="https://github.com/flant/loghouse/commit/{{ .Version }}" target="_blank">
+                    <span class="glyphicon glyphicon-link"></span>
+                    {{/*                    ver. <%= version %>*/}}
+                    ver.{{ .Version }}
+                </a>
+            </li>
+            <li class="navbar-right">
+                <a href="javascript:void(0)">
+                    {{/*                    Welcome back, <%= User.current %>*/}}
+                    Welcome back,{{ .Username }}
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+{{/*<%= yield %>*/}}
+
+<div class="error-container error-container_fixed">
+    <div class="container-fluid error-container__content">
+{{/*        <% unless @error.nil? %>*/}}
+        {{ if ne .ErrorMessage "" }}
+        <div class="alert alert-danger alert-dismissible" role="alert">
+{{/*            <%= @error %>*/}}
+            {{ .ErrorMessage }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+{{/*        <% end %>*/}}
+        {{ end }}
+    </div>
+</div>
+<div id="result">
+    <div class="logs-result logs-result_default-theme">
+        {{ if eq .ErrorMessage "" }}
+        <div class="logs-result__container"
+             data-entry-oldest='<%= @query.result.length > 0 ? @query.result.last.timestamp.strftime("%Y-%m-%d %H:%M:%S.%N") : Time.now.strftime("%Y-%m-%d %H:%M:%S.%N") %>'
+             data-entry-newest='<%= @query.result.length > 0 ? @query.result.first.timestamp.strftime("%Y-%m-%d %H:%M:%S.%N") : Time.now.strftime("%Y-%m-%d %H:%M:%S.%N") %>'>
+            {{ template "result" .}}
+        </div>
+        {{end}}
+    </div>
+</div>
+{{/*<%= erb :_filter_form %>*/}}
+
+
+<script src="vendor/jquery-3.2.1.min.js" charset="utf-8"></script>
+<script src="vendor/moment-with-locales.min.js" charset="utf-8"></script>
+<script src="vendor/bootstrap/js/bootstrap.min.js" charset="utf-8"></script>
+<script src="vendor/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js" charset="utf-8"></script>
+<script src="vendor/html.sortable.min.js" charset="utf-8"></script>
+<script src="vendor/select2/js/select2.full.min.js" charset="utf-8"></script>
+<script src="vendor/uri.js" charset="utf-8"></script>
+
+<script src="assets/javascripts/search-params.js" charset="utf-8"></script>
+<script src="assets/javascripts/main.js" charset="utf-8"></script>
+</body>
+</html>

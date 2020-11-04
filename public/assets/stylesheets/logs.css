@@ -1,0 +1,92 @@
+.logs-result {
+  position: fixed;
+  top: 0px;
+  height: 100%;
+  min-height: 100%;
+  width: 100%;
+  min-width: 100%;
+}
+
+.logs-result__container {
+  position: fixed;
+  top: 50px;
+  bottom: 90px;
+  padding: 0 10px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column-reverse;
+  width: 100%;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.0;
+  }
+}
+
+.kube-attribute:hover,
+.kube-label:hover,
+.kube-attribute:hover .logs-result__entry-key,
+.kube-label:hover .logs-result__entry-key,
+.logs-timestamp-seek-to:hover {
+  cursor: pointer;
+  background: #fff;
+  color: #000;
+}
+
+.logs-result__container::before, .logs-result__container::after {
+  content: 'Loading...';
+  color: #000;
+  height: 25px;
+  line-height: 25px;
+  animation: blink 1s step-start 0s infinite;
+}
+
+.logs-result__container.logs-result__container_loading-newer::before, .logs-result__container.logs-result__container_loading-older::after {
+  color: #999;
+}
+
+.logs-result_default-theme {
+  font-family: monaco,monospace;
+  font-size: 12px;
+  line-height: 1.8;
+  background: #000;
+  color: #fff;
+}
+
+.logs-result__entry {
+  margin-right: 2px;
+}
+
+.logs-result__entry-timestamp {
+  background: #262626;
+  color: #CD8D25;
+}
+
+.logs-result__entry-key {
+  background: #262626;
+  color: #258CCD;
+}
+
+.logs-result__entry-key_kube {
+  color: #998AAC;
+}
+
+.logs-result__entry-key_label {
+  color: #99A122;
+}
+
+.logs-result__breakpoint {
+  background: #262626;
+  color: #CCCCCC;
+  margin: 10px 0;
+}
+
+.seek-to-anchor {
+  color: #CC9999;
+  background: #555;
+}
+
+.logs-result_values_pre {
+  white-space: pre;
+}

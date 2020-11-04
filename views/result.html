@@ -1,0 +1,17 @@
+{{ $ParsedSeekTo := .ParsedSeekTo }}
+{{ range $i, $e := .Result }}
+    {{ $nextIndex := add $i 1 }}
+    {{ $nextEntry := index .Result $nextIndex }}
+    {{ if and (eq $i 0) $ParsedSeekTo ( le .Timestamp $ParsedSeekTo ) }}
+        {{ template "seek_to_anchor" .}}
+    {{ end }}
+
+    <div>
+        {{/*    <%= erb :_result_entry, locals: { entry: entry } %>*/}}
+{{/*        {{ template "result_entry" .}}*/}}
+    </div>
+
+    {{ if and $ParsedSeekTo ( and (ge .Timestamp $ParsedSeekTo) ( or (eq $nextEntry nil ) (le $nextEntry.Timestamp $ParsedSeekTo) ) ) }}
+        {{ template "seek_to_anchor" .}}
+    {{ end }}
+{{ end }}
