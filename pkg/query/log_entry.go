@@ -1,4 +1,4 @@
-package clickhouse
+package query
 
 type LogEntry struct {
 	Labels       []string
