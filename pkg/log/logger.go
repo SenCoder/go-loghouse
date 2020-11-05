@@ -38,6 +38,14 @@ func Infof(format string, args ...interface{}) {
 	DefaultLogger.Infof(format, args...)
 }
 
+func Warn(args ...interface{}) {
+	DefaultLogger.Warn(args...)
+}
+
+func Warnf(format string, args ...interface{}) {
+	DefaultLogger.Warnf(format, args...)
+}
+
 func Fatal(args ...interface{}) {
 	DefaultLogger.Fatal(args...)
 }

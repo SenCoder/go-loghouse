@@ -5,7 +5,7 @@ import (
 	"github.com/sencoder/go-loghouse/pkg/log"
 	"github.com/sencoder/go-loghouse/pkg/query"
 	"github.com/sencoder/go-loghouse/pkg/render"
-	"github.com/sirupsen/logrus"
+	"github.com/sencoder/go-loghouse/version"
 	"net/http"
 )
 
@@ -43,8 +43,6 @@ var datePicker = SuperDatepickerPresets{
 	},
 }
 
-
-
 type Last struct {
 	Name string
 	From string
@@ -61,10 +59,9 @@ type QueryParam struct {
 	query.TimeParams
 	Query      string   `schema:"query"`
 	QueryId    string   `schema:"query_id"`
-	PerPage    string   `schema:"per_page"`
+	PerPage    uint32   `schema:"per_page"`
 	Namespaces []string `schema:"namespaces"`
 }
-
 
 //# 获取日志查询主页面
 // _result_entry
@@ -81,12 +78,11 @@ func QueryHandler(w http.ResponseWriter, r *http.Request) {
 
 	var queryParam QueryParam
 
-	logrus.Infof("path=%s query=%+v", r.URL.Path, queryParam)
 	if err := decoder.Decode(&queryParam, r.Form); err != nil {
 		// Handle error
 	}
 
-	logrus.Infof("path=%s query=%+v", r.URL.Path, queryParam)
+	log.Debugf("path=%s query=%+v", r.URL.Path, queryParam)
 	// request for given query
 	if queryParam.QueryId != "" {
 		// query by id
@@ -100,10 +96,6 @@ func QueryHandler(w http.ResponseWriter, r *http.Request) {
 		QueryUser string
 	}
 
-	type Attribute struct {
-		Query string
-	}
-
 	data := struct {
 		Tab                 string
 		Username            string
@@ -113,9 +105,9 @@ func QueryHandler(w http.ResponseWriter, r *http.Request) {
 		ErrorMessage        string
 		ParsedSeekTo        string
 		Result              []query.LogQueryResult
-		Attribute           Attribute
 		Namespaces          []string
 		Persisted           bool
+		Query               string
 		Params              map[string]string
 		TimeParams          map[string]string
 		SuperDatepickerPresets
@@ -123,8 +115,9 @@ func QueryHandler(w http.ResponseWriter, r *http.Request) {
 		Tab:                    "",
 		Username:               "admin",
 		AvailableNamespaces:    []string{"review-123", "production", "staging"},
-		Version:                "e2282b63",
-		Namespaces:             []string{"staging"},
+		Version:                version.BuildVersion,
+		Namespaces:             queryParam.Namespaces,
+		Query:                  queryParam.Query,
 		Params:                 map[string]string{"format": "rangy"},
 		TimeParams:             query.DefaultTimeParams,
 		SuperDatepickerPresets: datePicker,
@@ -147,7 +140,6 @@ func QueryHandler(w http.ResponseWriter, r *http.Request) {
 	if err := q.Validate(); err != nil {
 
 	}
-
 
 	err := render.App.HTML(w, http.StatusOK, "index", data)
 	if err != nil {

@@ -1,5 +1,7 @@
 package query
 
+import "github.com/sencoder/go-loghouse/pkg/uuid"
+
 const DefaultPerPage = 249
 
 var (
@@ -12,21 +14,21 @@ var (
 )
 
 type TimeParams struct {
-	TimeFormat string   `schema:"time_format"`
-	SeekTo     string   `schema:"seek_to"` // `schema:"name,required"` custom name, must be supplied
-	TimeFrom   string   `schema:"time_from"`
-	TimeTo     string   `schema:"time_to"`
+	TimeFormat string `schema:"time_format"`
+	SeekTo     string `schema:"seek_to"` // `schema:"name,required"` custom name, must be supplied
+	TimeFrom   string `schema:"time_from"`
+	TimeTo     string `schema:"time_to"`
 }
 
 type loghouseQuery struct {
-	Id string
+	Id         string
 	Namespaces []string
-	OrderBy string
+	OrderBy    string
 }
 
 func NewLoghouseQuery(query string, namespaces []string) *loghouseQuery {
 	return &loghouseQuery{
-
+		Id: uuid.TimeUUID().String(),
 	}
 }
 

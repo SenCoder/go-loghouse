@@ -1,0 +1,15 @@
+http:
+  enabled: true
+  listen: :8080
+log:
+  level: info
+db:
+  address: "localhost:9000"
+  username: "default"
+  password: ""
+  database: "logs"
+  read_timeout: 30
+  write_timeout: 60
+  alt_hosts: ""
+  connection_open_strategy: "random"
+  debug: true
