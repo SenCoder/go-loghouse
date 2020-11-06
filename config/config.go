@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/pkg/errors"
+	"github.com/sencoder/go-loghouse/pkg/clickhouse"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 )
@@ -11,10 +12,15 @@ var DefaultConfig = &Config{
 		Enabled: true,
 		Listen:  ":8080",
 	},
+	Clickhouse: &clickhouse.Config{
+		Address:  "127.0.0.1:9000",
+		Username: "default",
+	},
 }
 
 type Config struct {
-	Http *HttpConfig
+	Http       *HttpConfig
+	Clickhouse *clickhouse.Config
 }
 
 type HttpConfig struct {

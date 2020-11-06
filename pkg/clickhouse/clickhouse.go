@@ -65,27 +65,51 @@ type Initializer struct {
 	*sql.DB
 	database string
 	cluster  string
+	ttl      uint
 }
 
-func (l *Initializer) CreateMergeTreeTable() error {
+func NewInitializer(cfg *Config, cluster string, ttl uint) *Initializer {
+
+	var db = DBName
+	switch {
+	case cfg != nil:
+		if cfg.Database != "" {
+			db = cfg.Database
+		}
+	}
+
+	return &Initializer{
+		database: db,
+		cluster:  cluster,
+		ttl:      ttl,
+	}
+}
+
+func (l *Initializer) CreateMergeTreeTable() {
 	sqlStr := fmt.Sprintf(logsRpl, l.cluster, l.database)
 	_, err := l.Exec(sqlStr)
-	handleException(err)
-	return err
+	handleCreateException(err)
 }
 
-func (l *Initializer) CreateBufferTable() error {
-	sqlStr := fmt.Sprintf(logsBuffer, l.cluster)
+func (l *Initializer) CreateBufferTable() {
+	sqlStr := fmt.Sprintf(logsBuffer, l.cluster, l.database)
 	_, err := l.Exec(sqlStr)
-	handleException(err)
-	return err
+	handleCreateException(err)
 }
 
-func (l *Initializer) CreateDistributedTable() error {
+func (l *Initializer) CreateDistributedTable() {
 	sqlStr := fmt.Sprintf(logsD, l.cluster, l.database, l.cluster)
 	_, err := l.Exec(sqlStr)
-	handleException(err)
-	return err
+	handleCreateException(err)
+}
+
+func handleCreateException(err error) {
+	if err == nil {
+		return
+	}
+	if exception, ok := err.(*clickhouse.Exception); ok {
+		log.Fatalf("Code: %d. Exception: %s. Stack: %s", exception.Code, exception.Message, exception.StackTrace)
+	}
 }
 
 func handleException(err error) {

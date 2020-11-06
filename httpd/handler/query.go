@@ -55,13 +55,13 @@ type SuperDatepickerPresets struct {
 	SeekTo   []string
 }
 
-type QueryParam struct {
-	query.TimeParams
-	Query      string   `schema:"query"`
-	QueryId    string   `schema:"query_id"`
-	PerPage    uint32   `schema:"per_page"`
-	Namespaces []string `schema:"namespaces"`
-}
+//type QueryParam struct {
+//	query.TimeParams
+//	Query      string   `schema:"query"`
+//	QueryId    string   `schema:"query_id"`
+//	PerPage    uint32   `schema:"per_page"`
+//	Namespaces []string `schema:"namespaces"`
+//}
 
 //# 获取日志查询主页面
 // _result_entry
@@ -76,7 +76,7 @@ func QueryHandler(w http.ResponseWriter, r *http.Request) {
 		// Handle error
 	}
 
-	var queryParam QueryParam
+	var queryParam query.QueryParam
 
 	if err := decoder.Decode(&queryParam, r.Form); err != nil {
 		// Handle error

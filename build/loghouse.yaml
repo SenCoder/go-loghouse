@@ -3,7 +3,7 @@ http:
   listen: :8080
 log:
   level: info
-db:
+clickhouse:
   address: "localhost:9000"
   username: "default"
   password: ""

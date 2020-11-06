@@ -1,33 +1,36 @@
 package clickhouse
 
-const DBName = "logs"
+import "github.com/sencoder/go-loghouse/pkg/env"
 
 // todo: 表参数 根据生产环境实际情况调整设置
 // TTL 设置数据过期时间
 // storage_policy 设置存储策略
 
 const (
+
+// 考虑 PARTITION BY (date) => PARTITION BY (date, namespace)
+// PARTITION BY (date, namespace) 查询性能可能更好
 	logsRpl = `
 CREATE TABLE IF NOT EXISTS logs_rpl
 ON CLUSTER %s
 (
     date 					Date MATERIALIZED toDate(timestamp),
-    timestamp 				DateTime, 
-    nsec 					UInt32, 
-    source 					String, 
-    namespace 				String, 
-    host 					String, 
-    pod_name 				String, 
-    container_name 			String, 
-    stream 					String, 
-    labels.names 			Array(String), 
-    labels.values 			Array(String), 
-    string_fields.names 	Array(String), 
-    string_fields.values 	Array(String), 
-    number_fields.names 	Array(String), 
-    number_fields.values 	Array(Float64), 
-    boolean_fields.names 	Array(String), 
-    boolean_fields.values 	Array(Float64), 
+    timestamp 				DateTime,
+    nsec 					UInt32,
+    source 					LowCardinality(String),
+    namespace 				LowCardinality(String),
+    host 					String,
+    pod_name 				String,
+    container_name 			String,
+    stream 					LowCardinality(String),
+    labels.names 			Array(String),
+    labels.values 			Array(String),
+    string_fields.names 	Array(String),
+    string_fields.values 	Array(String),
+    number_fields.names 	Array(String),
+    number_fields.values 	Array(Float64),
+    boolean_fields.names 	Array(String),
+    boolean_fields.values 	Array(Float64),
     null_fields.names 		Array(String)
 )
 ENGINE = ReplicatedMergeTree('/clickhouse/tables/%s/{shard}/logs_rpl', '{replica}')
@@ -36,6 +39,7 @@ ORDER BY (timestamp, nsec, namespace, container_name)
 TTL date + toIntervalDay(14)
 SETTINGS index_granularity = 32768;
 `
+
 	logsD = `
 CREATE TABLE IF NOT EXISTS logs 
 ON CLUSTER %s
@@ -46,7 +50,7 @@ ENGINE = Distributed(%s, %s, logs_rpl, rand());
 CREATE TABLE IF NOT EXISTS logs_buffer
 ON CLUSTER %s
 AS logs_rpl
-ENGINE = Buffer(currentDatabase(), logs, 16, 10, 60, 1000, 10000, 1048576, 10485760);
+ENGINE = Buffer(%s, logs, 16, 10, 60, 1000, 10000, 1048576, 10485760);
 `
 	queries = `
 CREATE TABLE queries_v1
@@ -76,3 +80,5 @@ ORDER BY timestamp
 SETTINGS index_granularity = 8192;
 `
 )
+
+var DBName = env.GetEnv("CLICKHOUSE_DATABASE", "logs")

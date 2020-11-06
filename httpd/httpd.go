@@ -5,6 +5,7 @@ import (
 	"github.com/sencoder/go-loghouse/config"
 	"github.com/sencoder/go-loghouse/httpd/handler"
 	"github.com/sencoder/go-loghouse/httpd/middleware"
+	"github.com/sencoder/go-loghouse/pkg/log"
 	"net/http"
 	"net/http/pprof"
 	"time"
@@ -35,6 +36,7 @@ func RunServer(cfg *config.HttpConfig) error {
 		Handler:     r,
 		IdleTimeout: time.Second * 10,
 	}
+	log.Infof("start http server on %s", cfg.Listen)
 
 	return server.ListenAndServe()
 }
