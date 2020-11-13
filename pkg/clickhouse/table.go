@@ -8,8 +8,8 @@ import "github.com/sencoder/go-loghouse/pkg/env"
 
 const (
 
-// 考虑 PARTITION BY (date) => PARTITION BY (date, namespace)
-// PARTITION BY (date, namespace) 查询性能可能更好
+	// 如果 TTL 比较小(比如 14d)，考虑 PARTITION BY (date) => PARTITION BY (date, namespace)
+	// PARTITION BY (date, namespace) 查询性能可能更好
 	logsRpl = `
 CREATE TABLE IF NOT EXISTS logs_rpl
 ON CLUSTER %s
@@ -46,7 +46,7 @@ ON CLUSTER %s
 AS logs_rpl
 ENGINE = Distributed(%s, %s, logs_rpl, rand());
 `
-	logsBuffer=`
+	logsBuffer = `
 CREATE TABLE IF NOT EXISTS logs_buffer
 ON CLUSTER %s
 AS logs_rpl
@@ -67,7 +67,7 @@ PARTITION BY id
 ORDER BY id
 SETTINGS index_granularity = 8192;
 `
-	migrations=`
+	migrations = `
 CREATE TABLE migrations
 ON CLUSTER %s
 (

@@ -90,7 +90,6 @@ func QueryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// query from params
-
 	type TabQuery struct {
 		QueryId   string
 		QueryUser string

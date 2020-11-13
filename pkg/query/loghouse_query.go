@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	qb "github.com/didi/gendry/builder"
+	"github.com/sencoder/go-loghouse/pkg/log"
 	"github.com/sencoder/go-loghouse/pkg/uuid"
 	"time"
 )
@@ -21,7 +22,7 @@ var (
 
 /*
 时间参数方面，尽量简化设计
- */
+*/
 type TimeParams struct {
 	TimeFormat string `schema:"time_format"`
 	SeekTo     string `schema:"seek_to"` // `schema:"name,required"` custom name, must be supplied
@@ -35,6 +36,7 @@ type QueryParam struct {
 	QueryId    string   `schema:"query_id"`
 	PerPage    uint32   `schema:"per_page"`
 	Namespaces []string `schema:"namespaces"`
+	ShownKeys  []string `schema:"shown_keys"`
 }
 
 type loghouseQuery struct {
@@ -77,6 +79,7 @@ func (q *loghouseQuery) Paginate(newerThan, olderThan string, perPage uint32) {
 // 查询入口
 func (q *loghouseQuery) Result(db sql.DB, param QueryParam) {
 	where := toClickhouseWhere(
+		ParseQuery(param.Query),
 		toClickhouseParts(q.from, q.to),
 		toClickhouseTimeCompare(q.from, ">"),
 		toClickhouseTimeCompare(q.to, "<"),
@@ -141,7 +144,6 @@ func toClickhouseParts(from, to time.Time) map[string]interface{} {
 
 func toClickhouseTimeCompare(t time.Time, compare string) map[string]interface{} {
 	if t.Nanosecond() == 0 {
-		//return "timestamp " + compare + " " + toClickhouseTime(t)
 		return map[string]interface{}{
 			"timestamp " + compare: toClickhouseTime(t),
 		}
@@ -214,6 +216,8 @@ func (q *loghouseQuery) Run(db sql.DB, table string, where map[string]interface{
 	if nil != err {
 		return err
 	}
+	log.Debugf("cond=%s", cond)
+	log.Debugf("vals=%s", vals)
 
 	rows, err := db.Query(cond, vals...)
 	if nil != err {
